@@ -2,11 +2,11 @@
 using System.Collections;
 
 public class EnemySpawner : MonoBehaviour {
-    public GameObject enemyPrefab, bossPrefab, boss;
+    public GameObject enemyPrefab;
 	public float width, height, speed, spawnDelay, waves;
 	bool isMovingRight = true;
 	float xmin, xmax;
-    int enemies, bosses;
+    int enemies;
 
 
 	void Start () {
@@ -15,7 +15,6 @@ public class EnemySpawner : MonoBehaviour {
 		xmax = Camera.main.ViewportToWorldPoint(new Vector3(1,0,zDistance)).x;
 
         enemies = 0;
-        bosses = 0;
 		SpawnEnemies();
 	}
 	
@@ -29,12 +28,6 @@ public class EnemySpawner : MonoBehaviour {
 		    if (NextFreePosition()){
 			    Invoke ("SpawnEnemies", spawnDelay);
 		    }
-    }
-
-    void SpawnBoss()
-    {
-        bosses = 1;
-        boss = Instantiate(bossPrefab, new Vector3(0,20,4), Quaternion.identity) as GameObject;
     }
 
     public void OnDrawGizmos() {
@@ -56,10 +49,11 @@ public class EnemySpawner : MonoBehaviour {
 		}
 		
 		if (AllEnemiesAreDead()) {
-            if (enemies <= waves*transform.childCount) {
+            if (enemies < waves*transform.childCount) {
                 SpawnEnemies();
-            } else if (bosses == 0) {
-                SpawnBoss();
+            } else {
+                BossSpawner.spawnBoss = true;
+                Destroy(gameObject);
             }
 		}
 	}
